@@ -56,11 +56,12 @@ public class firstFrame extends JFrame implements TreeSelectionListener {
 	private JTree treeExplore;
 	private String address;
 	private JPopupMenu popupMenu;
-	private JMenuItem saveItem, cutItem, copyItem, pasteItem, deleteItem, propertiesItem;
+	private JMenuItem newItem, cutItem, copyItem, pasteItem, deleteItem, propertiesItem;
 	private JScrollPane scrollPane_1;
 	private JList jList = new JList();
 	private JPanel panel;
 	private String srcPath, desPath;
+	private boolean cut=false;
 
 	/**
 	 * Launch the application.
@@ -90,7 +91,7 @@ public class firstFrame extends JFrame implements TreeSelectionListener {
 		contentPane.setLayout(null);
 
 		popupMenu = new JPopupMenu("Popup Menu");
-		saveItem = new JMenuItem("Save");
+		newItem = new JMenuItem("New");
 		cutItem = new JMenuItem("Cut");
 		copyItem = new JMenuItem("Copy");
 		pasteItem = new JMenuItem("Paste");
@@ -102,7 +103,7 @@ public class firstFrame extends JFrame implements TreeSelectionListener {
 		popupMenu.addSeparator();
 		popupMenu.add(pasteItem);
 		popupMenu.addSeparator();
-		popupMenu.add(saveItem);
+		popupMenu.add(newItem);
 		popupMenu.addSeparator();
 		popupMenu.add(deleteItem);
 		popupMenu.addSeparator();
@@ -110,21 +111,38 @@ public class firstFrame extends JFrame implements TreeSelectionListener {
 		// add actionListener for jmenuitem
 		copyItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				cut=false;
 				srcPath=tfAddress.getText();
 			}
 		});
 		cutItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				srcPath=tfAddress.getText();
+				cut=true;
 			}
 		});
 		pasteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				desPath=tfAddress.getText();
-				pasteFile(new File(srcPath), new File(desPath));
+				String src=srcPath;
+				//lay dia chi thu muc nguon de tao thanh thu muc dich
+				for(int i=src.length()-1; i>0; i--) {
+					if(src.charAt(i)== '\\' || src.charAt(i)=='/') {
+						src=src.substring(i, src.length());
+						System.out.println(src);
+						break;
+					}
+				}
+				
+				pasteFile(new File(srcPath), new File(desPath+src));
+				if (cut) {
+					//neu chon cut thi sau khi paste phai xoa file nguon
+					deleteDir(new File(srcPath));
+				}
+//				JOptionPane.showMessageDialog(null, "Completed!");
 			}
 		});
-		saveItem.addActionListener(new ActionListener() {
+		newItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
 			}
@@ -136,7 +154,14 @@ public class firstFrame extends JFrame implements TreeSelectionListener {
 		});	
 		deleteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				deleteDir(new File(tfAddress.getText()));
+				int choice= JOptionPane.showConfirmDialog(null, "Delete this file"+ tfAddress.getText(), "Delete", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if(choice==0) {
+					int check=deleteDir(new File(tfAddress.getText()));
+					if(check==1) {
+						JOptionPane.showMessageDialog(null, "Deleted");
+					}
+				}
+				listFile(address);
 			}
 		});
 		// jscroolpane has a tree exxplore
@@ -203,7 +228,6 @@ public class firstFrame extends JFrame implements TreeSelectionListener {
 			public void mousePressed(MouseEvent arg0) {
 				// TODO Auto-generated method stub
 				if(SwingUtilities.isRightMouseButton(arg0)){
-//					address=convertPath(address);
 					tfAddress.setText(address);
 					JList list = (JList)arg0.getSource();
 		            int row = list.locationToIndex(arg0.getPoint());
@@ -288,18 +312,6 @@ public class firstFrame extends JFrame implements TreeSelectionListener {
 		tfAddress.setText(add);
 		return add;
 	}
-	public String convertPath(String address) {
-		String add="";
-		for(int i=0; i<address.length(); i++) {
-			if(address.charAt(i)=='\\') {
-				add+="/";
-			}else {
-				add+=address.charAt(i);
-			}
-		}
-		System.out.println(add);
-		return add;
-	}
 	// create a method to read the file is selected
 //	public void read(String address) {
 //		FileReader file = null;
@@ -332,7 +344,7 @@ public class firstFrame extends JFrame implements TreeSelectionListener {
 			scrollPane_1.setViewportView(jList);
 			tfAddress.setText(path);
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Error");
+			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
 	}
 
@@ -362,11 +374,11 @@ public class firstFrame extends JFrame implements TreeSelectionListener {
 		}
 	}
 	public void openDirectory(MouseEvent event) {
-//		if(SwingUtilities.isRightMouseButton(event)) {
-//			showPopupMenu(event);
-//		}
+		if (event.getClickCount()==1) {
+			address= jList.getSelectedValue()+"";//lay duong dan file duoc chon	
+			tfAddress.setText(address);
+		}
 		if(event.getClickCount()==2 ) {
-			String address= jList.getSelectedValue()+"";//lay duong dan file duoc chon
 			File file = new File(address);
 			if(file.isDirectory()) {
 				listFile(address);//neu file la thu muc thi hien thi cac tep/thu muc con
@@ -393,18 +405,23 @@ public class firstFrame extends JFrame implements TreeSelectionListener {
 		}else {
 			try {
 				copyFile(src, des);
+				JOptionPane.showMessageDialog(null, "Completed!");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				JOptionPane.showMessageDialog(null, e.getMessage());
 			}
 		}
 	}
-	public static void copyDirectory(File sourceFilemFile, File destinationFile) {
-		if(!sourceFilemFile.exists()) {
-			sourceFilemFile.mkdir();// neu chua ton tai thu muc thif tao thu muc
+	public static void copyDirectory(File sourceFile, File destinationFile) {
+		if(!destinationFile.exists()) {
+			destinationFile.mkdir();// neu chua ton tai thu muc thif tao thu muc
 		}
-		for(String f:sourceFilemFile.list()) {
-			 pasteFile(new File(sourceFilemFile, f), new File(destinationFile, f));
+		String f[]=sourceFile.list();
+		if(f!=null) {
+			for(int i=0; i<f.length; i++) {
+				pasteFile(new File(sourceFile, f[i]), new File(destinationFile, f[i]));
+			} 
+			
 		}
 	}
 	private static void copyFile(File sourceFile, File destinationFile) 
@@ -418,14 +435,21 @@ public class firstFrame extends JFrame implements TreeSelectionListener {
 			        }
 			    }
 			}
-	public void deleteDir(File file) {
-		File fi[]= file.listFiles();
-		if(fi!=null) {
-			for(int i=0;i<fi.length; i++) {
-				deleteDir(fi[i]);
+	public int deleteDir(File file) {
+		int check=1;
+		try {
+			File fi[]= file.listFiles();
+			if(fi!=null) {
+				for(int i=0;i<fi.length; i++) {
+					deleteDir(fi[i]);
+				}
 			}
+			file.delete();
+			listFile(address);
+		} catch (Exception e) {
+			check=0;
+			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
-		file.delete();
-		listFile(address);
+		return check;
 	}
 }
