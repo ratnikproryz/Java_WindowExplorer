@@ -149,7 +149,8 @@ public class firstFrame extends JFrame implements TreeSelectionListener {
 		});
 		propertiesItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				System.out.println("hello"+tfAddress.getText());
+				new property().getProperty(new File(tfAddress.getText()));
 			}
 		});	
 		deleteItem.addActionListener(new ActionListener() {
@@ -405,7 +406,7 @@ public class firstFrame extends JFrame implements TreeSelectionListener {
 		}else {
 			try {
 				copyFile(src, des);
-				JOptionPane.showMessageDialog(null, "Completed!");
+//				JOptionPane.showMessageDialog(null, "Completed!");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				JOptionPane.showMessageDialog(null, e.getMessage());
