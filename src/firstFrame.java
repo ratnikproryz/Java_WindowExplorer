@@ -57,8 +57,8 @@ public class firstFrame extends JFrame implements TreeSelectionListener{
 	private DefaultMutableTreeNode treeThisPC;
 	private JTree treeExplore;
 	private String address;
-	private JPopupMenu popupMenu;
-	private JMenuItem newItem, cutItem, copyItem, pasteItem, deleteItem, propertiesItem, renameItem;
+	private JPopupMenu popupMenu, subMenu;
+	private JMenuItem newItem, cutItem, copyItem, pasteItem, deleteItem, propertiesItem, renameItem, dirItem, fileItem;
 	private JScrollPane scrollPane_1;
 	private JList jList = new JList();
 	private JPanel panel;
@@ -115,6 +115,15 @@ public class firstFrame extends JFrame implements TreeSelectionListener{
 		popupMenu.add(propertiesItem);
 		popupMenu.addSeparator();
 		popupMenu.add(renameItem);
+		
+		subMenu= new JPopupMenu("Sub Menu");
+		dirItem=new JMenuItem("Directoty");
+		fileItem= new JMenuItem("File");
+		subMenu.add(dirItem);
+		subMenu.addSeparator();
+		
+		subMenu.add(fileItem);
+		
 		// add actionListener for jmenuitem
 		copyItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -149,15 +158,25 @@ public class firstFrame extends JFrame implements TreeSelectionListener{
 			}
 		});
 		//
-		newItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		newItem.addMouseListener(new MouseListener() {
+			public void mouseReleased(MouseEvent arg0) {
+
+			}
+			public void mousePressed(MouseEvent arg0) {
+				subMenu.show(arg0.getComponent(), arg0.getX(), arg0.getY());
+			}
+			public void mouseExited(MouseEvent arg0) {
 				
+			}
+			public void mouseEntered(MouseEvent arg0) {
+				
+			}
+			public void mouseClicked(MouseEvent arg0) {
 			}
 		});
 		//
 		propertiesItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("hello"+tfAddress.getText());
 				new property().getProperty(new File(tfAddress.getText()));
 			}
 		});	
@@ -178,7 +197,19 @@ public class firstFrame extends JFrame implements TreeSelectionListener{
 		renameItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Rename r= new Rename(new File(tfAddress.getText()));						
-				
+			}
+		});
+		
+		//gan hanh dong cho submenu
+		
+		dirItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				System.out.println("create dir");
+				createDir crDir= new createDir(tfAddress.getText());
+			}
+		});
+		fileItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
 				
 			}
 		});
