@@ -70,5 +70,6 @@ public class property extends JFrame {
 //		lbSizeValue.setText(file.length()+" bytes");
 		lbSizeValue.setText(file.length()+" bytes");
 		lbModifyValue.setText(new Date(file.lastModified()).toString());
+		
 	}
 }
