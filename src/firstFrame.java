@@ -115,15 +115,18 @@ public class firstFrame extends JFrame implements TreeSelectionListener{
 		popupMenu.add(propertiesItem);
 		popupMenu.addSeparator();
 		popupMenu.add(renameItem);
+		popupMenu.addSeparator();
 		
-		subMenu= new JPopupMenu("Sub Menu");
-		dirItem=new JMenuItem("Directoty");
-		fileItem= new JMenuItem("File");
-		subMenu.add(dirItem);
-		subMenu.addSeparator();
-		
-		subMenu.add(fileItem);
-		
+//		subMenu= new JPopupMenu("Sub Menu");
+//		dirItem=new JMenuItem("Directoty");
+//		fileItem= new JMenuItem("File");
+//		subMenu.add(dirItem);
+//		subMenu.addSeparator();
+//		subMenu.add(fileItem);
+//		popupMenu.add(dirItem);
+//		popupMenu.addSeparator();
+//		popupMenu.add(fileItem);
+//		
 		// add actionListener for jmenuitem
 		copyItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -163,7 +166,8 @@ public class firstFrame extends JFrame implements TreeSelectionListener{
 
 			}
 			public void mousePressed(MouseEvent arg0) {
-				subMenu.show(arg0.getComponent(), arg0.getX(), arg0.getY());
+//				subMenu.show(arg0.getComponent(), arg0.getX(), arg0.getY());
+				createDir crDir= new createDir(tfAddress.getText());
 			}
 			public void mouseExited(MouseEvent arg0) {
 				
@@ -202,17 +206,17 @@ public class firstFrame extends JFrame implements TreeSelectionListener{
 		
 		//gan hanh dong cho submenu
 		
-		dirItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("create dir");
-				createDir crDir= new createDir(tfAddress.getText());
-			}
-		});
-		fileItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-			}
-		});
+//		dirItem.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent arg0) {
+//				System.out.println("create dir");
+//				createDir crDir= new createDir(tfAddress.getText());
+//			}
+//		});
+//		fileItem.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent arg0) {
+//				System.out.println("file");
+//			}
+//		});
 		
 		// jscroolpane has a tree exxplore
 		JScrollPane scrollPane = new JScrollPane();
@@ -222,7 +226,7 @@ public class firstFrame extends JFrame implements TreeSelectionListener{
 		// create tree explorer
 		treeExplore = null;
 		treeThisPC = new DefaultMutableTreeNode("This PC");
-		// tao tree day du nhng lau
+		// 
 		java.util.List<File> files = Arrays.asList(File.listRoots());
 		for (File drv : files) {
 			String harddisk = FileSystemView.getFileSystemView().getSystemDisplayName(drv);
